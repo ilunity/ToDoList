@@ -1,4 +1,10 @@
 "use strict"
+//todo Добавить сортировку для выполненных заданий
+//todo Кнопка удаления всех выполненных заданий
+//todo Добавить возможность редактировать задание
+//todo Перенос строки при добавлении задания
+//     (отслеживать нажатие shift+enter, добавлять в innerHtml тег <br>, сохранять текст для innerHtml)
+//     https://learn.javascript.ru/keyboard-events
 
 
 import {highPriorityForm, lowPriorityForm, taskElemClass} from "./view.js";
@@ -22,7 +28,7 @@ function deleteTaskFromStorage(taskElem) {
 function loadTasks() {
     const tasks = taskStorage.get();
     for (let taskOptions of Object.values(tasks)) {
-        addTask(taskOptions);
+        addTask(taskOptions, true);
     }
 }
 
@@ -31,25 +37,7 @@ function isUniqueTaskText(taskText) {
     return !currentTaskTexts.includes(taskText);
 }
 
-function addTask(options) {
-    // todo проверка на уникальность текста
-    const {text, priority} = options;
-    if (!isUniqueTaskText(text)) {
-        alert('Такое задание уже существует');
-        return;
-    }
-
-    let newTask = new taskElemClass(options, {
-        callbackDelete() {
-            deleteTaskFromStorage(newTask);
-        },
-        callbackChangeStatus() {
-            syncTaskWithStorage(newTask);
-        },
-    });
-
-    taskStorage.add(options.text, options);
-
+function getTasksList(priority) {
     let tasksList;
     if (priority === LOW_PRIORITY) {
         tasksList = lowPriorityForm;
@@ -57,11 +45,35 @@ function addTask(options) {
         tasksList = highPriorityForm;
     }
 
+    return tasksList;
+}
+
+//todo Существующие в памяти задание перезаписываются после перезагрузки
+function addTask(options, rewriteSameTasks = false) {
+    const {text, priority} = options;
+
+    const tasksList = getTasksList(priority);
     tasksList.resetText();
+
+    if (!isUniqueTaskText(text) && !rewriteSameTasks) {
+        alert('Такое задание уже существует');
+        return;
+    }
+
+    let newTask = new taskElemClass(options, {
+        deleteCallback() {
+            deleteTaskFromStorage(newTask);
+        },
+        changeStatusCallback() {
+            syncTaskWithStorage(newTask);
+        },
+    });
+
+    taskStorage.add(options.text, options);
     tasksList.append(newTask);
 }
 
-
+//todo Добавить в PriorityForm .text с именем приоритета, передавать в addTask PriorityForm
 highPriorityForm.submitBtnElem.addEventListener("submit", () => {
     addTask({
         text: highPriorityForm.getText(),

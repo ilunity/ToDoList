@@ -2,7 +2,7 @@
 
 
 class taskElemClass extends HTMLDivElement {
-    constructor({text, priority, isActive}, {callbackDelete, callbackChangeStatus}) {
+    constructor({text, priority, isActive}, {deleteCallback, changeStatusCallback}) {
         super();
         this.className = 'task';
 
@@ -12,13 +12,18 @@ class taskElemClass extends HTMLDivElement {
             isActive: isActive,
         };
 
+        this.callbacks = {
+            delete: deleteCallback,
+            changeStatus: changeStatusCallback,
+        }
+
         const checkBoxElem = document.createElement('div');
         this.checkBoxElem = checkBoxElem;
         checkBoxElem.className = 'check-box';
         this.setActiveStatus(isActive);
         checkBoxElem.addEventListener("click", () => {
             this.setActiveStatus(!this.options.isActive);
-            callbackChangeStatus();
+            this.callbacks.changeStatus();
         });
 
         const textElem = document.createElement('div');
@@ -30,8 +35,7 @@ class taskElemClass extends HTMLDivElement {
         this.deleteBtnElem = deleteBtnElem;
         deleteBtnElem.className = 'delete-task-btn';
         deleteBtnElem.addEventListener("click", () => {
-            this.remove();
-            callbackDelete();
+            this.delete();
         });
 
         this.append(checkBoxElem);
@@ -54,6 +58,11 @@ class taskElemClass extends HTMLDivElement {
         this.checkBoxElem.classList.remove('check-box_active');
         this.classList.remove('task_active');
         this.options.isActive = false;
+    }
+
+    delete() {
+        this.remove();
+        this.callbacks.delete();
     }
 }
 
