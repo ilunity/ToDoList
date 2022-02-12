@@ -30,7 +30,7 @@ body {
 
 .task-form {
   width: 460px;
-  height: 45px;
+  min-height: 45px;
   background-color: #A1ACEE;
   border: 1px solid #989898;
   border-radius: 6px;
@@ -41,7 +41,12 @@ body {
 }
 .task-form__text {
   width: 350px;
+  height: 20px;
   background-color: inherit;
+  line-height: 20px;
+  overflow-wrap: break-word;
+  overflow: hidden;
+  resize: none;
 }
 .task-form__text::placeholder {
   color: #FFFFFF;
@@ -65,8 +70,10 @@ body {
 }
 .task__text {
   width: 360px;
+  height: auto;
   margin: 0 18px 0 12px;
   overflow-wrap: break-word;
+  overflow: auto;
 }
 .task:last-child {
   margin-bottom: 0;

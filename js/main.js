@@ -48,12 +48,12 @@ function getTasksList(priority) {
     return tasksList;
 }
 
-//todo Существующие в памяти задание перезаписываются после перезагрузки
+//todo Существующие в памяти задания перезаписываются после перезагрузки
 function addTask(options, rewriteSameTasks = false) {
     const {text, priority} = options;
 
     const tasksList = getTasksList(priority);
-    tasksList.resetText();
+
 
     if (!isUniqueTaskText(text) && !rewriteSameTasks) {
         alert('Такое задание уже существует');
@@ -74,19 +74,23 @@ function addTask(options, rewriteSameTasks = false) {
 }
 
 //todo Добавить в PriorityForm .text с именем приоритета, передавать в addTask PriorityForm
-highPriorityForm.submitBtnElem.addEventListener("submit", () => {
+highPriorityForm.addPriorityFormListener("submit", () => {
     addTask({
-        text: highPriorityForm.getText(),
+        text: highPriorityForm.getHtmlText(),
         priority: HIGH_PRIORITY,
         isActive: false,
     });
+    highPriorityForm.resetText();
+    highPriorityForm.textResize();
 })
-lowPriorityForm.submitBtnElem.addEventListener("submit", () => {
+lowPriorityForm.addPriorityFormListener("submit", () => {
     addTask({
-        text: lowPriorityForm.getText(),
+        text: lowPriorityForm.getHtmlText(),
         priority: LOW_PRIORITY,
         isActive: false,
     });
+    lowPriorityForm.resetText();
+    lowPriorityForm.textResize();
 })
 
 loadTasks();
